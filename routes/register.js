@@ -4,8 +4,8 @@ var User = require('../lib/user');
 
 router.post('/', function(req, res, next) {
     var data = {
-        name: req.body.user_name,
-        pass: req.body.user_pass
+        name: req.body.username,
+        pass: req.body.userpass
     }
     User.getByName(data.name, function(err, user) {
         if (err) {
@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
         if (user.id) {
             res.send({
                 type: 'error',
-                message: 'Username already taken!'
+                message: '用户名已存在！'
             });
         } else {
             user = new User({
@@ -28,7 +28,8 @@ router.post('/', function(req, res, next) {
                 req.session.uid = user.id;
                 res.send({
                     type: 'info',
-                    message: 'Register succeed!'
+                    message: '注册成功',
+                    notes: []
                 });
             });
         }

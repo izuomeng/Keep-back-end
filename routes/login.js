@@ -1,30 +1,37 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../lib/user');
+var Entry = require('../lib/entry')
 
 router.get('/logout', function(req, res, next) {
     req.session.uid = 0;
     res.send({
         type: 'info',
-        message: 'Logout succeed'
+        message: '注销成功'
     });
 });
 router.post('/login', function(req, res, next) {
     var data = req.body;
-    User.authenticate(data.user_name, data.user_pass, function(err, user) {
+    User.authenticate(data.username, data.userpass, function(err, user) {
         if (err) {
             return next(err);
         }
         if (user) {
             req.session.uid = user.id;
-            res.send({
-                type: 'info',
-                message: 'Login Succeed'
-            })
+            Entry.getAll(user.name, function(err, entries) {
+                if (err) {
+                    return next(err);
+                }
+                res.send({
+                    type: 'info',
+                    message: '登陆成功',
+                    notes: entries
+                });
+            });
         } else {
             res.send({
                 type: 'error',
-                message: 'Sorry! Invalid credentials'
+                message: '用户不存在或密码错误！'
             });
         }
     });

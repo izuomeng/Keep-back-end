@@ -18,8 +18,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: 'zuomeng',
-  cookie: {maxAge: 6e8},
+  secret: 'muyuqiu',
+  cookie: {maxAge: 3.6e6},
   resave: true,
   saveUninitialized: true
 }));
@@ -38,8 +38,7 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   if (err) {
-    res.status(err.status || 500);
-    res.send({
+    console.log({
       type: 'error',
       message: err.message
     })
