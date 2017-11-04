@@ -2,14 +2,25 @@ var express = require('express');
 var router = express.Router();
 var Entry = require('../lib/entry');
 
-//default router
 router.get('/', function(req, res, next) {
-    Entry.getAll(req.user.name, function(err, entries) {
-        if (err) {
-            return next(err);
-        }
-        res.send(entries);
-    });
+    if (!req.user.name) {
+        return res.send({
+            type: 'error',
+            username: null,
+            notes: []
+        })
+    } else {
+        Entry.getAll(req.user.name, function(err, entries) {
+            if (err) {
+                return next(err);
+            }
+            return res.send({
+                type: 'info',
+                username: req.user.name,
+                notes: entries
+            });
+        });
+    }
 });
 
 router.post('/', 

@@ -18,22 +18,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  secret: 'muyuqiu',
+  secret: 'zuomeng',
   cookie: {maxAge: 3.6e6},
   resave: true,
   saveUninitialized: true
 }));
 app.use(user);
 
-app.use('/', login);
+app.use('/login', login);
 app.use('/register', register);
 app.use('/notes', notes);
-
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
 
 // error handler
 app.use(function(err, req, res, next) {

@@ -12,9 +12,11 @@ router.post('/', function(req, res, next) {
             return next(err);
         }
         if (user.id) {
-            res.send({
+            return res.send({
                 type: 'error',
-                message: '用户名已存在！'
+                message: '用户名已存在！',
+                notes: [],
+                username: ''
             });
         } else {
             user = new User({
@@ -26,10 +28,11 @@ router.post('/', function(req, res, next) {
                     return next(err);
                 }
                 req.session.uid = user.id;
-                res.send({
+                return res.send({
                     type: 'info',
                     message: '注册成功',
-                    notes: []
+                    notes: [],
+                    username: data.name
                 });
             });
         }

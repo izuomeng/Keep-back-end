@@ -3,14 +3,7 @@ var router = express.Router();
 var User = require('../lib/user');
 var Entry = require('../lib/entry')
 
-router.get('/logout', function(req, res, next) {
-    req.session.uid = 0;
-    res.send({
-        type: 'info',
-        message: '注销成功'
-    });
-});
-router.post('/login', function(req, res, next) {
+router.post('/', function(req, res, next) {
     var data = req.body;
     User.authenticate(data.username, data.userpass, function(err, user) {
         if (err) {
@@ -22,16 +15,19 @@ router.post('/login', function(req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                res.send({
+                return res.json({
                     type: 'info',
                     message: '登陆成功',
-                    notes: entries
+                    notes: entries,
+                    username: user.name
                 });
             });
         } else {
-            res.send({
+            return res.json({
                 type: 'error',
-                message: '用户不存在或密码错误！'
+                message: '用户不存在或密码错误！',
+                notes: [],
+                username: ''
             });
         }
     });
