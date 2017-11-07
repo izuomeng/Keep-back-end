@@ -8,3 +8,5 @@ router.get('/', function(req, res, next) {
         message: '注销成功'
     });
 });
+
+module.exports = router;

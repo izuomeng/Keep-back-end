@@ -7,6 +7,7 @@ var session = require('express-session');
 var user = require('./lib/middleware/user')
 
 var login = require('./routes/login');
+var logout = require('./routes/logout');
 var register = require('./routes/register');
 var notes = require('./routes/notes');
 
@@ -26,6 +27,7 @@ app.use(session({
 app.use(user);
 
 app.use('/login', login);
+app.use('/logout', logout);
 app.use('/register', register);
 app.use('/notes', notes);
 

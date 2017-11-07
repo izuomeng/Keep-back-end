@@ -17,7 +17,7 @@ router.post('/', function(req, res, next) {
                 }
                 return res.json({
                     type: 'info',
-                    message: '登陆成功',
+                    message: `欢迎回来，${user.name}`,
                     notes: entries,
                     username: user.name
                 });
