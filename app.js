@@ -38,6 +38,9 @@ app.use(function(err, req, res, next) {
       type: 'error',
       message: err.message
     })
+    res.send({
+      type: 'error'
+    })
   }
 });
 

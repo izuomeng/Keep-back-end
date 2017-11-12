@@ -25,13 +25,35 @@ router.get('/', function(req, res, next) {
     }
 });
 
-router.post('/', 
-    function(req, res, next) {
-        var data = req.body,
-            entry = new Entry({
-                username: req.user.name,
-                // ...data
+router.post('/', function(req, res, next) {
+    var data = req.body,
+        entry = new Entry({
+            username: req.user.name,
+            id: data.id,
+            title: data.title,
+            text: data.text,
+            lable: data.lable || '',
+            isFixed: data.isFixed || false,
+            bgColor: data.bgColor || '#FAFAFA',
+            isReminder: data.isReminder || false,
+            reminderInfo: data.reminderInfo || {
+                date: null,
+                repeat: ''
+            },
+            isDeleted: data.isDeleted || false,
+            deleteTime: data.deleteTime || null
+        })
+    Entry.removeById(data.id, err => {
+        if (err) {
+            return next(err)
+        }
+        if (data.title.blocks.length < 2 && !data.title.blocks[0].text 
+            && data.text.blocks.length < 2 && !data.text.blocks[0].text) {
+            return res.send({
+                type: 'info',
+                message: 'empty note'
             })
+        }
         entry.save(function(err) {
             if (err) {
                 res.send({
@@ -45,7 +67,7 @@ router.post('/',
                 message: 'upload notes succeed'
             })
         });
-    }
-);
+    })
+});
 
 module.exports = router;
