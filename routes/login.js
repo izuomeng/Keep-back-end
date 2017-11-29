@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../lib/user');
-var Entry = require('../lib/entry')
+var Entry = require('../lib/entry');
+var App = require('../lib/app');
 
 router.post('/', function(req, res, next) {
     var data = req.body;
@@ -15,12 +16,18 @@ router.post('/', function(req, res, next) {
                 if (err) {
                     return next(err);
                 }
-                return res.json({
+                App.getAll(user.name, function(err, app) {
+                  if (err) {
+                    return next(err);
+                  }
+                  return res.json({
                     type: 'info',
                     message: `欢迎回来，${user.name}`,
+                    username: user.name,
                     notes: entries,
-                    username: user.name
-                });
+                    app
+                  });
+                })
             });
         } else {
             return res.json({

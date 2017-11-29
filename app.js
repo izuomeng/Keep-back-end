@@ -10,6 +10,7 @@ var login = require('./routes/login');
 var logout = require('./routes/logout');
 var register = require('./routes/register');
 var notes = require('./routes/notes');
+var userApp = require('./routes/app')
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use('/login', login);
 app.use('/logout', logout);
 app.use('/register', register);
 app.use('/notes', notes);
+app.use('/app', userApp)
 
 // error handler
 app.use(function(err, req, res, next) {
