@@ -3,16 +3,17 @@ var router = express.Router();
 var Entry = require('../lib/entry');
 var App = require('../lib/app')
 
-router.get('/', function (req, res, next) {
+router.use(function(req, res, next) {
   if (!req.user.name) {
     return res.send({
       type: 'error',
-      message: '需要认证！',
-      username: null,
-      notes: [],
-      app:{}
+      message: 'not authenticate',
     })
   } else {
+    return next()
+  }
+})
+router.get('/', function (req, res, next) {
     Entry.getAll(req.user.name, function (err, entries) {
       if (err) {
         return next(err);
@@ -30,7 +31,6 @@ router.get('/', function (req, res, next) {
         });
       })
     });
-  }
 });
 
 router.post('/', function (req, res, next) {
@@ -78,7 +78,9 @@ router.post('/', function (req, res, next) {
   })
 });
 router.post('/editNote', function (req, res, next) {
-  var data = req.body;
+  var data = req.body
+  var username = req.user.name
+  Object.assign(data.newNote, {username})
   Entry.replaceNote(data.newNote, (err) => {
     if (err) {
       return next(err)

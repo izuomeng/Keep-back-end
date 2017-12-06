@@ -2,6 +2,14 @@ var express = require('express');
 var router = express.Router();
 var App = require('../lib/app');
 
+router.use(function(req, res, next) {
+  if (!req.user.name) {
+    return res.send({
+      type: 'error',
+      message: 'not authenticate',
+    })
+  }
+})
 router.post('/', function(req, res, next) {
     var data = req.body,
         app = new App({
