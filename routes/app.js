@@ -8,6 +8,8 @@ router.use(function(req, res, next) {
       type: 'error',
       message: 'not authenticate',
     })
+  } else {
+    return next()
   }
 })
 router.post('/', function(req, res, next) {

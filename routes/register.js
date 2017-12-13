@@ -16,7 +16,8 @@ router.post('/', function(req, res, next) {
                 type: 'error',
                 message: '用户名已存在！',
                 notes: [],
-                username: ''
+                username: '',
+                app: {}
             });
         } else {
             user = new User({
@@ -32,7 +33,8 @@ router.post('/', function(req, res, next) {
                     type: 'info',
                     message: '注册成功',
                     notes: [],
-                    username: data.name
+                    username: data.name,
+                    app: {}
                 });
             });
         }

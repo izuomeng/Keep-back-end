@@ -34,7 +34,8 @@ router.post('/', function(req, res, next) {
                 type: 'error',
                 message: '用户不存在或密码错误！',
                 notes: [],
-                username: ''
+                username: '',
+                app: {}
             });
         }
     });
