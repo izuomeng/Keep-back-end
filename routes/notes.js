@@ -1,35 +1,48 @@
 var express = require('express');
+var Delta = require('quill-delta')
 var router = express.Router();
 var Entry = require('../lib/entry');
-var App = require('../lib/app')
+var App = require('../lib/app');
+var multer  = require('multer');
 
-router.use(function(req, res, next) {
+var path = require('path'),
+  fs = require('fs'),
+  join = path.join,
+  upload = multer({dest: 'uploads/'});
+  
+function isBlank(content) {
+  const delta = new Delta(content)
+  return delta.length() < 2
+}
+router.use(function (req, res, next) {
   if (!req.user.name) {
     return res.send({
       type: 'error',
-      message: 'not authenticate',
+      message: 'not authenticate'
     })
   } else {
     return next()
   }
 })
 router.get('/', function (req, res, next) {
-    Entry.getAll(req.user.name, function (err, entries) {
+  Entry
+    .getAll(req.user.name, function (err, entries) {
       if (err) {
         return next(err);
       }
-      App.getAll(req.user.name, function(err, app) {
-        if (err) {
-          return next(err);
-        }
-        return res.send({
-          type: 'info',
-          message: '获取数据成功',
-          username: req.user.name,
-          notes: entries,
-          app
-        });
-      })
+      App
+        .getAll(req.user.name, function (err, app) {
+          if (err) {
+            return next(err);
+          }
+          return res.send({
+            type: 'info',
+            message: '获取数据成功',
+            username: req.user.name,
+            notes: entries,
+            app
+          });
+        })
     });
 });
 
@@ -55,41 +68,59 @@ router.post('/', function (req, res, next) {
     if (err) {
       return next(err)
     }
-    if (data.title.blocks.length < 2 && !data.title.blocks[0].text
-      && data.text.blocks.length < 2 && !data.text.blocks[0].text) {
+    if (isBlank(data.title) && isBlank(data.text)) {
       return res.send({
         type: 'info',
         message: 'empty note'
       })
     }
-    entry.save(function (err) {
-      if (err) {
+    entry
+      .save(function (err) {
+        if (err) {
+          res.send({
+            type: 'error',
+            message: 'upload notes failed'
+          })
+          return next(err);
+        }
         res.send({
-          type: 'error',
-          message: 'upload notes failed'
+          type: 'info',
+          message: 'upload notes succeed'
         })
-        return next(err);
-      }
-      res.send({
-        type: 'info',
-        message: 'upload notes succeed'
-      })
-    });
+      });
   })
 });
 router.post('/editNote', function (req, res, next) {
   var data = req.body
   var username = req.user.name
-  Object.assign(data.newNote, {username})
-  Entry.replaceNote(data.newNote, (err) => {
-    if (err) {
-      return next(err)
-    }
-    res.send({
-      type: 'info',
-      message: 'insert notes succeed'
+  if (Array.isArray(data.notes)) {
+    var notes = data.notes.map(note => {
+      note.username = username
+      return note
     })
-  })
+    Entry.replaceNotes(notes, (err) => {
+      if (err) {
+        return next(err)
+      }
+      res.send({
+        type: 'info',
+        message: 'insert notes succeed'
+      })
+    })
+  } else {
+    Object.assign(data.newNote, {
+      username
+    })
+    Entry.replaceNote(data.newNote, (err) => {
+      if (err) {
+        return next(err)
+      }
+      res.send({
+        type: 'info',
+        message: 'insert notes succeed'
+      })
+    })
+  }
 })
 router.post('/deleteNote', function (req, res, next) {
   var data = req.body
@@ -103,4 +134,20 @@ router.post('/deleteNote', function (req, res, next) {
     })
   })
 })
+router.post('/upload',upload.single('image'), function(req, res, next) {
+  var file = req.file,
+    name = file.originalname,
+    id = req.body.id
+    path = join(__dirname, `../public/images/${id}-${name}`);
+  fs.rename(file.path, path, function(err) {
+    if (err) {
+      return next(err);
+    }
+    res.send({
+      type: 'info',
+      message: 'upload succeed'
+    })
+  });
+})
+
 module.exports = router;
