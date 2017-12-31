@@ -138,7 +138,7 @@ router.post('/upload',upload.single('image'), function(req, res, next) {
   var file = req.file,
     name = file.originalname,
     id = req.body.id
-    path = join(__dirname, `../public/images/${id}-${name}`);
+    path = join(__dirname, `../public/images/${name}`);
   fs.rename(file.path, path, function(err) {
     if (err) {
       return next(err);
