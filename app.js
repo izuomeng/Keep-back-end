@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'zuomeng',
-  cookie: {maxAge: 3.6e6},
+  cookie: {maxAge: 2.6e9},
   resave: true,
   saveUninitialized: true
 }));
